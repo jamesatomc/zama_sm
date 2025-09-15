@@ -39,4 +39,19 @@ contract Kanari is ERC20, Ownable, SepoliaConfig {
         require(totalSupply() + amount <= MAX_SUPPLY, "mint would exceed max supply");
         _mint(to, amount);
     }
+
+    /// @notice Burn tokens from caller
+    function burn(uint256 amount) public {
+        _burn(_msgSender(), amount);
+    }
+
+    /// @notice Burn tokens from `account` using allowance
+    function burnFrom(address account, uint256 amount) public {
+        uint256 currentAllowance = allowance(account, _msgSender());
+        if (currentAllowance != type(uint256).max) {
+            require(currentAllowance >= amount, "ERC20: burn amount exceeds allowance");
+            _approve(account, _msgSender(), currentAllowance - amount);
+        }
+        _burn(account, amount);
+    }
 }
